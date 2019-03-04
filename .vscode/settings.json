@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "/home/lwang/anaconda3/envs/fastai/bin/python",
+    "python.linting.pylintEnabled": true
+}

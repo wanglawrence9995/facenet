@@ -10,15 +10,15 @@ from torchvision import transforms
 from eval_metrics import evaluate, plot_roc
 from utils import TripletLoss
 from models import FaceNetModel
-from data_loader import TripletFaceDataset, get_dataloader
+from data_loader9 import TripletFaceDataset, get_dataloader  #use new training set for testing
 
 
 parser = argparse.ArgumentParser(description = 'Face Recognition using Triplet Loss')
 
 parser.add_argument('--start-epoch', default = 0, type = int, metavar = 'SE',
                     help = 'start epoch (default: 0)')
-parser.add_argument('--num-epochs', default = 200, type = int, metavar = 'NE',
-                    help = 'number of epochs to train (default: 200)')
+parser.add_argument('--num-epochs', default = 1, type = int, metavar = 'NE',
+                    help = 'number of epochs to train (default: 2)')
 parser.add_argument('--num-classes', default = 10000, type = int, metavar = 'NC',
                     help = 'number of clases (default: 10000)')
 parser.add_argument('--num-train-triplets', default = 10000, type = int, metavar = 'NTT',
@@ -35,13 +35,13 @@ parser.add_argument('--learning-rate', default = 0.001, type = float, metavar = 
                     help = 'learning rate (default: 0.001)')
 parser.add_argument('--margin', default = 0.5, type = float, metavar = 'MG',
                     help = 'margin (default: 0.5)')
-parser.add_argument('--train-root-dir', default = '/run/media/hoosiki/WareHouse2/home/mtb/datasets/vggface2/test_mtcnnpy_182', type = str,
+parser.add_argument('--train-root-dir', default = '/home/lwang/data/facenetsmall/lfwtrain/', type = str,
                     help = 'path to train root dir')
-parser.add_argument('--valid-root-dir', default = '/run/media/hoosiki/WareHouse2/home/mtb/datasets/lfw/lfw_mtcnnpy_182', type = str,
+parser.add_argument('--valid-root-dir', default = '/home/lwang/data/facenetsmall/lfwvalid/', type = str,
                     help = 'path to valid root dir')
-parser.add_argument('--train-csv-name', default = './datasets/test_vggface2.csv', type = str,
+parser.add_argument('--train-csv-name', default = '/home/lwang/data/facenetsmall/lfwtrain.csv', type = str,
                     help = 'list of training images')
-parser.add_argument('--valid-csv-name', default = './datasets/lfw.csv', type = str,
+parser.add_argument('--valid-csv-name', default = '/home/lwang/data/facenetsmall/lfwvalid.csv', type = str,
                     help = 'list of validtion images')
 
 args    = parser.parse_args()
