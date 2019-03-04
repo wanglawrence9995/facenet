@@ -35,13 +35,21 @@ parser.add_argument('--learning-rate', default = 0.001, type = float, metavar = 
                     help = 'learning rate (default: 0.001)')
 parser.add_argument('--margin', default = 0.5, type = float, metavar = 'MG',
                     help = 'margin (default: 0.5)')
-parser.add_argument('--train-root-dir', default = '/home/lwang/data/facenetsmall/lfwtrain/', type = str,
+# parser.add_argument('--train-root-dir', default = '/home/lwang/data/facenetsmall/lfwtrain/', type = str,
+#                     help = 'path to train root dir')
+# parser.add_argument('--valid-root-dir', default = '/home/lwang/data/facenetsmall/lfwvalid/', type = str,
+#                     help = 'path to valid root dir')
+# parser.add_argument('--train-csv-name', default = '/home/lwang/data/facenetsmall/lfwtrain.csv', type = str,
+#                     help = 'list of training images')
+# parser.add_argument('--valid-csv-name', default = '/home/lwang/data/facenetsmall/lfwvalid.csv', type = str,
+#                     help = 'list of validtion images')
+parser.add_argument('--train-root-dir', default = '/home/lwang/data/facedata/train/', type = str,
                     help = 'path to train root dir')
-parser.add_argument('--valid-root-dir', default = '/home/lwang/data/facenetsmall/lfwvalid/', type = str,
+parser.add_argument('--valid-root-dir', default = '/home/lwang/data/facedata/valid/', type = str,
                     help = 'path to valid root dir')
-parser.add_argument('--train-csv-name', default = '/home/lwang/data/facenetsmall/lfwtrain.csv', type = str,
+parser.add_argument('--train-csv-name', default = '/home/lwang/data/facedata/train.csv', type = str,
                     help = 'list of training images')
-parser.add_argument('--valid-csv-name', default = '/home/lwang/data/facenetsmall/lfwvalid.csv', type = str,
+parser.add_argument('--valid-csv-name', default = '/home/lwang/data/facedata/valid.csv', type = str,
                     help = 'list of validtion images')
 
 args    = parser.parse_args()

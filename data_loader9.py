@@ -5,8 +5,8 @@ from skimage import io
 import torch
 from torchvision import transforms
 from torch.utils.data import Dataset
-from trans9 import ToTensor9
-
+from trans9 import ToTensor9,FaceDataToTensor
+from pathlib import Path
 
 class TripletFaceDataset(Dataset):
 
@@ -77,13 +77,23 @@ class TripletFaceDataset(Dataset):
         
         anc_id, pos_id, neg_id, pos_class, neg_class, pos_name, neg_name = self.training_triplets[idx]
         
-        anc_img   = os.path.join(self.root_dir, str(pos_name), str(anc_id) + '.png')
-        pos_img   = os.path.join(self.root_dir, str(pos_name), str(pos_id) + '.png')
-        neg_img   = os.path.join(self.root_dir, str(neg_name), str(neg_id) + '.png')
-        
-        anc_img   = io.imread(anc_img)
-        pos_img   = io.imread(pos_img)
-        neg_img   = io.imread(neg_img)
+        pathRoot = Path(self.root_dir)
+        if pathRoot.parent.name == 'facedata':  # need load from .npy
+            anc_img   = os.path.join(self.root_dir, str(pos_name), str(anc_id) + '.npy')
+            pos_img   = os.path.join(self.root_dir, str(pos_name), str(pos_id) + '.npy')
+            neg_img   = os.path.join(self.root_dir, str(neg_name), str(neg_id) + '.npy')
+            
+            anc_img   = np.load(anc_img)
+            pos_img   = np.load(pos_img)
+            neg_img   = np.load(neg_img)
+        else:
+            anc_img   = os.path.join(self.root_dir, str(pos_name), str(anc_id) + '.png')
+            pos_img   = os.path.join(self.root_dir, str(pos_name), str(pos_id) + '.png')
+            neg_img   = os.path.join(self.root_dir, str(neg_name), str(neg_id) + '.png')
+
+            anc_img   = io.imread(anc_img)
+            pos_img   = io.imread(pos_img)
+            neg_img   = io.imread(neg_img)
 
         pos_class = torch.from_numpy(np.array([pos_class]).astype('long'))
         neg_class = torch.from_numpy(np.array([neg_class]).astype('long'))
@@ -102,6 +112,12 @@ class TripletFaceDataset(Dataset):
         
         return len(self.training_triplets)
     
+def get_trans(root_dir):
+    rootPath = Path(root_dir)
+    if rootPath.parent.name == 'facedata':
+        return 'face'
+    return ''
+
 
 def get_dataloader(train_root_dir,     valid_root_dir, 
                    train_csv_name,     valid_csv_name, 
@@ -115,20 +131,30 @@ def get_dataloader(train_root_dir,     valid_root_dir,
             transforms.RandomHorizontalFlip(),
             ToTensor9(),
             transforms.Normalize(mean = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], std = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])]),
+        'trainface': transforms.Compose([
+            #transforms.ToPILImage(),
+            #transforms.RandomHorizontalFlip(),
+            FaceDataToTensor(),
+            transforms.Normalize(mean = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], std = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])]),        
         'valid': transforms.Compose([
             transforms.ToPILImage(),
             ToTensor9(),
-            transforms.Normalize(mean = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], std = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])])}
+            transforms.Normalize(mean = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], std = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])]),
+        'validface': transforms.Compose([
+            #transforms.ToPILImage(),
+            FaceDataToTensor(),
+            transforms.Normalize(mean = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], std = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])])           
+            }
 
     face_dataset = {
         'train' : TripletFaceDataset(root_dir     = train_root_dir,
                                      csv_name     = train_csv_name,
                                      num_triplets = num_train_triplets,
-                                     transform    = data_transforms['train']),
+                                     transform    = data_transforms['train'+ get_trans(train_root_dir)]),
         'valid' : TripletFaceDataset(root_dir     = valid_root_dir,
                                      csv_name     = valid_csv_name,
                                      num_triplets = num_valid_triplets,
-                                     transform    = data_transforms['valid'])}
+                                     transform    = data_transforms['valid' + get_trans(valid_root_dir)])}
 
     dataloaders = {
         x: torch.utils.data.DataLoader(face_dataset[x], batch_size = batch_size, shuffle = False, num_workers = num_workers)
